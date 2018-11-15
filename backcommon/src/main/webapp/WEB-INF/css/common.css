@@ -1,0 +1,35 @@
+* {
+	margin: auto;
+}
+
+.bs-info {
+	padding: 5px;
+	border-left: 7px solid #1b809e;
+}
+
+.panel-width70 {
+	width: 70%;
+}
+
+.panel-width90 {
+	width: 90%;
+}
+
+.mselect {
+	width: 100px;
+	height: 90%;
+	line-height: 1.42857143;
+	color: #555;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+input {
+	line-height: 1.42857143;
+	color: #555;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+.current_a {
+	background-color: #9cc3e4;
+}
