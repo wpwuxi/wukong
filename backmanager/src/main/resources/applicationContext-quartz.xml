@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context-4.3.xsd
+    http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util-4.3.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+    http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+	http://www.springframework.org/schema/rabbit  
+    http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd">
+
+	<!-- 免拼卡筛选待发送的定时任务 -->
+	<bean id="theScheduler"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+<!-- 				<ref bean="trigger_commission_levelone"/> -->
+<!-- 				<ref bean="trigger_commission_leveltwo"/> -->
+<!-- 				<ref bean="trigger_commission_ontheway" /> -->
+			</list>
+		</property>
+		<property name="autoStartup" value="true"></property>
+	</bean>
+
+	<bean id="trigger_commission_levelone"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="job_commission_levelone" />
+		<property name="cronExpression">
+			<!-- 每月15日凌晨1点钟 -->
+			<value>0 0 1 15 * ? *</value>
+			<!-- <value>* 0/1 * * * ?</value> -->
+		</property>
+	</bean>
+
+	<bean id="trigger_commission_leveltwo"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="job_commission_leveltwo" />
+		<property name="cronExpression">
+			<!-- 每月15日凌晨2点钟 -->
+			<value>0 0 2 15 * ? *</value>
+			<!-- <value>* 0/1 * * * ?</value> -->
+		</property>
+	</bean>
+
+	<bean id="trigger_commission_ontheway"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="job_commission_ontheway" />
+		<property name="cronExpression">
+			<!-- 每日凌晨3点钟 -->
+			<value>0 0 3 * * ? *</value>
+<!-- 			<value>* 0/1 * * * ?</value> -->
+		</property>
+	</bean>
+
+
+	<bean id="job_commission_levelone"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="commissionLevelOneQuartz">
+		</property>
+		<property name="targetMethod" value="work"></property>
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<bean id="job_commission_leveltwo"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="commissionLevelTwoQuartz">
+		</property>
+		<property name="targetMethod" value="work"></property>
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<bean id="job_commission_ontheway"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="commissionOnthewayQuartz">
+		</property>
+		<property name="targetMethod" value="work"></property>
+		<property name="concurrent" value="false" />
+	</bean>
+</beans>

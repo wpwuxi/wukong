@@ -1,0 +1,143 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page language="java" contentType="text/html; charset=utf-8"
+	pageEncoding="utf-8" isELIgnored="false"%>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<%
+	String path = request.getContextPath();
+	// 获得本项目的地址(例如: http://localhost:8080/MyApp/)赋值给basePath变量 
+	String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			+ path;
+	// 将 "项目路径basePath" 放入pageContext中，待以后用EL表达式读出。 
+	pageContext.setAttribute("basePath", basePath);
+%>
+<link rel="stylesheet" href="${pageScope.basePath}/css/common.css">
+<link rel="stylesheet" href="${pageScope.basePath}/js/layui/css/layui.css">
+<link rel="stylesheet"
+	href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- ECharts单文件引入 -->
+<script src="${pageScope.basePath}/js/echarts.js"></script>
+<script src="${pageScope.basePath}/js/laydate.js"></script>
+<script src="${pageScope.basePath}/js/layui/layui.js"></script>
+<script src="${pageScope.basePath}/js/dateformat.js"></script>
+</head>
+<body>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">用户管理</h3>
+		</div>
+		<div class="panel-body" style="margin: auto">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">关键指标</h3>
+				</div>
+				<div id="content" class="row-fluid panel-width90"
+					style="margin: auto">
+					<h5 class="bs-info">查询</h5>
+					<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+					<form class="form-horizontal" role="form" id="query" action="query"
+						method="get">
+						<div class="form-group">
+							<label for="phone" class="col-sm-1 control-label">手机号</label>
+							<div class="col-sm-2">
+								<input type="text" class="form-control" id="phone" name="phone"
+									value="${phone}" placeholder="">
+							</div>
+
+							<label for="type" class="col-sm-1 control-label">类型</label>
+							<div class="col-sm-2">
+								<select class="form-control" id="type" name="type">
+									<option value="">全部</option>
+									<option value="00">代理人</option>
+									<option value="01">普通用户</option>
+								</select>
+							</div>
+
+							<label for="userId" class="col-sm-1 control-label">用户号</label>
+							<div class="col-sm-2">
+								<input type="text" class="form-control" id="userId"
+									value="${userId}" name="userId" placeholder="">
+							</div>
+<%-- 							<shiro:hasPermission name="query"> --%>
+								<div class="col-sm-2">
+									<input type="submit" class="form-control"
+										style="background-color: #009688; color: white" value="查询">
+								</div>
+<%-- 							</shiro:hasPermission> --%>
+						</div>
+						<input type="hidden" name="currpage" value="1">
+					</form>
+					<h5 class="bs-info">详细数据</h5>
+					<table class="table table-condensed">
+						<thead>
+							<tr class="active">
+								<th>用户号</th>
+								<th>手机号</th>
+								<th>用户姓名</th>
+								<th>推广人</th>
+								<th>开户时间</th>
+							</tr>
+						</thead>
+						<tbody id="dataBody">
+							<c:forEach var="user" items="${page.list}" varStatus="status">
+								<tr>
+									<td>${user.userId}</td>
+									<td>${user.phone}</td>
+									<td>${user.name}</td>
+									<td>${user.agentUserId}</td>
+									<fmt:parseDate value="${user.createdTime}" var="parsedEmpDate" pattern="yyyyMMddHHmmss" />
+									<td><fmt:formatDate value="${parsedEmpDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+									</td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+					<div id="demo1" style="float: right"></div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var test = "${page}";
+		var pageSize = "${page.pageSize}";
+		var orderlen = "${page.total}";
+		var curr = "${page.pageNum}";
+		console.log(test);
+		console.log(pageSize);
+		console.log(orderlen);
+		console.log(curr);
+		//总页数大于页码总数
+		layui.use([ 'laypage', 'layer' ], function() {
+			var laypage = layui.laypage, layer = layui.layer;
+			laypage.render({
+				elem : 'demo1',
+				limit : pageSize,
+				count : orderlen,
+				curr : curr,
+				layout : [ 'count', 'prev', 'page', 'next', 'skip' ],
+				jump : function(obj) {
+					console.log(obj);
+					if (obj.curr == curr) {
+						return;
+					}
+					$("input[name='currpage']").val(obj.curr);
+					$("#query").submit();
+				}
+			});
+		});
+
+		var type = "${type}";
+		$("#type option[value='" + type + "']").attr("selected", "selected");
+	</script>
+</body>
+</html>

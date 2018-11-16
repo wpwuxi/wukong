@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wukong.background.backcommon.dao.SomeDao">
+	<!-- 查询 -->
+	<select id="select" parameterType="com.wukong.background.backcommon.bo.SomeDO"
+		resultType="com.wukong.background.backcommon.bo.SomeDO">
+		SELECT * FROM t_some
+		WHERE 1 = 1
+		<!-- 
+		<if test="userId != null and userId !=''">
+			AND t1.user_id = #{userId}
+		</if>
+		<if test="userType != null and userType !=''">
+			AND t1.user_type = #{userType}
+		</if>
+		ORDER BY created_time desc
+		 --> 
+	</select>
+	<!-- 新增 -->
+	<insert id="insert" parameterType="com.wukong.background.backcommon.bo.SomeDO"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_some
+		(id,name)
+		VALUES
+		(#{id},#{name})
+	</insert>
+	<!-- 更新 -->
+	<update id="update" parameterType="com.wukong.background.backcommon.bo.SomeDO">
+		UPDATE t_some
+		<set>
+			<if test="name != null and name !=''">
+				name = #{name},
+			</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+</mapper>

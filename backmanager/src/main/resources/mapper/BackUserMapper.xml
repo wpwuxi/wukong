@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wukong.background.backcommon.dao.BackUserDao">
+
+    <resultMap type="com.wukong.background.backcommon.bo.BackUser" id="UserResult">
+        <result property="uid" column="uid"/>
+        <result property="username" column="user_name"/>
+        <result property="password" column="user_pswd"/>
+    </resultMap>
+    
+    <select id="getByUserName" parameterType="String" resultMap="UserResult">
+        select * 
+        from t_back_user 
+        where user_name=#{username}
+    </select>
+    
+    <select id="getRoles" parameterType="String" resultType="String">
+        select r.role_name
+        from t_back_user u,t_back_role r 
+        where u.rid=r.rid 
+        and u.user_name=#{username}
+    </select>
+    
+    <select id="getPermissions" parameterType="String" resultType="String">
+        select p.permission_name 
+        from t_back_user u,t_back_role r,t_back_permission p 
+        where u.rid=r.rid 
+        and p.rid=r.rid 
+        and u.user_name=#{username}
+    </select>
+
+</mapper>
